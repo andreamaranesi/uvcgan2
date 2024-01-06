@@ -75,7 +75,7 @@ def get_downsample_x2_pixelshuffle_conv_layer(features, **kwargs):
 def get_upsample_x2_deconv2_layer(features, **kwargs):
     return (
         nn.ConvTranspose2d(
-            features, features, kernel_size = 2, stride = 2, **kwargs
+            features, features, kernel_size = 3, stride = 2, padding = 1, output_padding = 1, **kwargs
         ),
         features
     )
