@@ -209,24 +209,24 @@ class ViTInput(nn.Module):
         self.register_buffer('x_const', self.x)
         self.register_buffer('y_const', self.y)
 
-        self.embed  = FourierEmbedding(embed_features, height, width)
-        self.output = nn.Linear(embed_features + input_features, features)
+        self.embed  = nn.Parameter(torch.zeros((1, height * width, embed_features))) # FourierEmbedding(embed_features, height, width)
+        # self.output = nn.Linear(embed_features + input_features, features)
 
     def forward(self, x):
         # x     : (N, L, input_features)
         # embed : (1, height * width, embed_features)
         #       = (1, L, embed_features)
-        embed = self.embed(self.y_const, self.x_const)
+        embed = self.embed # self.embed(self.y_const, self.x_const)
 
         # embed : (1, L, embed_features)
         #      -> (N, L, embed_features)
         embed = embed.expand((x.shape[0], *embed.shape[1:]))
 
         # result : (N, L, embed_features + input_features)
-        result = torch.cat([embed, x], dim = 2)
+       # result = torch.cat([embed, x], dim = 2)
 
         # (N, L, features)
-        return self.output(result)
+        return x + embed #self.output(result)
 
 class PixelwiseViT(nn.Module):
 
