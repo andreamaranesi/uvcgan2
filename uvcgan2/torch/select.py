@@ -42,7 +42,7 @@ def get_norm_layer(norm, features):
         return nn.InstanceNorm2d(features, **kwargs)
     
     if name == 'group':
-        return GroupNorm32(32, features)
+        return GroupNorm48(48, features)
     
 
     raise ValueError("Unknown Layer: '%s'" % name)
