@@ -111,7 +111,7 @@ class TransformerBlock(nn.Module):
         super().__init__(**kwargs)
 
         self.norm1 = get_norm_layer(norm, features)
-        self.atten = nn.MultiheadAttention(features, n_heads)
+        self.atten = nn.MultiheadAttention(features, n_heads, dropout=0.1, batch_first=False)
 
         self.norm2 = get_norm_layer(norm, features)
         self.ffn   = PositionWiseFFN(features, ffn_features, activ)
@@ -151,22 +151,23 @@ class TransformerEncoder(nn.Module):
     ):
         super().__init__(**kwargs)
 
-        self.encoder = nn.Sequential(*[
-            TransformerBlock(
-                features, ffn_features, n_heads, activ, norm, rezero
-            ) for _ in range(n_blocks)
-        ])
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=features,
+            nhead=n_heads,
+            dim_feedforward=ffn_features,
+            dropout=0.1,
+            activation=activ,
+            batch_first=True,
+            norm_first=True
+        )
+
+        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=n_blocks)
 
     def forward(self, x):
         # x : (N, L, features)
 
-        # y : (L, N, features)
-        y = x.permute((1, 0, 2))
-        y = self.encoder(y)
-
-        # result : (N, L, features)
-        result = y.permute((1, 0, 2))
-
+        result = self.encoder(x)
+    
         return result
 
 class FourierEmbedding(nn.Module):
