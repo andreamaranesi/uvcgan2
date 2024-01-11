@@ -28,6 +28,7 @@ class UnetBasicBlock(nn.Module):
             ),
             get_norm_layer(norm, out_features),
             get_activ_layer(activ),
+            nn.Dropout(p=0.1)
         )
 
     def forward(self, x):
