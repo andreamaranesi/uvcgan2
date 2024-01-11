@@ -13,6 +13,19 @@ def extract_name_kwargs(obj):
 
     return (name, kwargs)
 
+class GroupNorm32(nn.GroupNorm):
+    def forward(self, x):
+        return super().forward(x.float()).type(x.dtype)
+    
+def normalization(channels):
+    """
+    Make a standard normalization layer.
+
+    :param channels: number of input channels.
+    :return: an nn.Module for normalization.
+    """
+    return GroupNorm32(32, channels)
+
 def get_norm_layer(norm, features):
     name, kwargs = extract_name_kwargs(norm)
 
@@ -27,6 +40,10 @@ def get_norm_layer(norm, features):
 
     if name == 'instance':
         return nn.InstanceNorm2d(features, **kwargs)
+    
+    if name == 'group':
+        return GroupNorm32(32, features)
+    
 
     raise ValueError("Unknown Layer: '%s'" % name)
 
@@ -53,6 +70,9 @@ def get_activ_layer(activ):
 
     if name == 'sigmoid':
         return nn.Sigmoid()
+    
+    if name == 'silu':
+        return nn.SiLU()
 
     raise ValueError("Unknown activation: '%s'" % name)
 

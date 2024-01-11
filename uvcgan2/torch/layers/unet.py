@@ -20,14 +20,13 @@ class UnetBasicBlock(nn.Module):
             mid_features = out_features
 
         self.block = nn.Sequential(
-            get_norm_layer(norm, in_features),
             nn.Conv2d(in_features, mid_features, kernel_size = 3, padding = 1),
+            get_norm_layer(norm, in_features),
             get_activ_layer(activ),
-
-            get_norm_layer(norm, mid_features),
             nn.Conv2d(
                 mid_features, out_features, kernel_size = 3, padding = 1
             ),
+            get_norm_layer(norm, in_features),
             get_activ_layer(activ),
         )
 
