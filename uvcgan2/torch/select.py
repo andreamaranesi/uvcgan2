@@ -13,7 +13,7 @@ def extract_name_kwargs(obj):
 
     return (name, kwargs)
 
-class GroupNorm32(nn.GroupNorm):
+class GroupNorm48(nn.GroupNorm):
     def forward(self, x):
         return super().forward(x.float()).type(x.dtype)
     
@@ -24,7 +24,7 @@ def normalization(channels):
     :param channels: number of input channels.
     :return: an nn.Module for normalization.
     """
-    return GroupNorm32(32, channels)
+    return GroupNorm48(48, channels)
 
 def get_norm_layer(norm, features):
     name, kwargs = extract_name_kwargs(norm)
