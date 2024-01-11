@@ -13,18 +13,6 @@ def extract_name_kwargs(obj):
 
     return (name, kwargs)
 
-class GroupNorm48(nn.GroupNorm):
-    def forward(self, x):
-        return super().forward(x.float()).type(x.dtype)
-    
-def normalization(channels):
-    """
-    Make a standard normalization layer.
-
-    :param channels: number of input channels.
-    :return: an nn.Module for normalization.
-    """
-    return GroupNorm48(48, channels)
 
 def get_norm_layer(norm, features):
     name, kwargs = extract_name_kwargs(norm)
@@ -42,7 +30,7 @@ def get_norm_layer(norm, features):
         return nn.InstanceNorm2d(features, **kwargs)
     
     if name == 'group':
-        return GroupNorm48(48, features)
+        return nn.GroupNorm(48, features, **kwargs)
     
 
     raise ValueError("Unknown Layer: '%s'" % name)
